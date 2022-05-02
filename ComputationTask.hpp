@@ -6,34 +6,81 @@
 
 #include "DLS.hpp"
 
+#include <vector>
 #include <fstream>
 
 
 class ComputationTask {
 public:
-    static void Run(const std::string& inputFileName, const std::string& outputFileName) {
-        auto taskData = ReadTask(inputFileName);
-        auto initialState = GenerateInitialState(taskData);
-        auto allSquares = DiagonalLatinSquareGenerator::GenerateAllPossibleSquares(initialState);
-        // measure time for code to run
-        auto start = std::chrono::high_resolution_clock::now();
-        for (const auto &square: allSquares) {
-            std::cout << DLS_SubrectangleFinder::CountSubLatin(square) << std::endl;
-            std::cout << DLS_LoopFinder::CountLoops(square).first << std::endl;
-        }
-        auto end = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-        std::cout << "Time taken by function: " << duration.count() << " ms" << std::endl;
+    ComputationTask(const char* inputFileName, const char* outputFileName):
+        taskData_(ReadTask(inputFileName)),
+        initialState_(GenerateInitialState(taskData_)),
+        allSquares_(DiagonalLatinSquareGenerator::GenerateAllPossibleSquares(initialState_)) {
+
+        out_.open(outputFileName, std::fstream::out | std::fstream::app | std::fstream::binary);
+        outputFileName_ = outputFileName;
+    }
+
+    ~ComputationTask() {
+        out_.flush();
+        out_.close();
+    }
+
+    void GoToCheckpoint(const char* checkpointFileName) {
+        std::fstream checkpoint;
+        checkpoint.open(checkpointFileName, std::ios::in | std::fstream::binary);
+        if (checkpoint.fail() || checkpoint.tellp() == 0) return;
+        uint64_t nchars;
+        checkpoint >> taskData_.processingPosition >> nchars;
+        // open output file and truncate it to nchars
+        out_ = std::fstream(outputFileName_, std::fstream::out | std::fstream::app | std::fstream::binary | std::fstream::trunc);
+        out_.seekp(nchars, std::fstream::beg);
+    }
+
+    bool DoIteration() {
+        auto currentSquare = allSquares_[taskData_.processingPosition];
+        auto sublatins = DLS_SubrectangleFinder::CountSubLatin(currentSquare);
+        auto loops = DLS_LoopFinder::CountLoops(currentSquare);
+        out_ << currentSquare.ToString() << " " << sublatins << " " << loops.first <<  " " << loops.second << std::endl;
+        return ++taskData_.processingPosition != allSquares_.size();
+    }
+
+    int MakeCheckpoint(const char* checkpointFileName) {
+        out_.flush();
+        std::fstream checkpoint;
+        checkpoint.open(checkpointFileName, std::ios::out | std::fstream::binary);
+        if (checkpoint.fail()) return -1;
+        checkpoint << taskData_.processingPosition << " " << out_.tellp() << std::endl;
+        checkpoint.close();
+        return 0;
+    }
+    
+    void Finish() {
+        out_.flush();
+    }
+
+    double GetFractionDone() {
+        return static_cast<double>(taskData_.processingPosition) / allSquares_.size();
     }
 
 private:
-
     struct TaskData {
         uint64_t size = 1;
         uint64_t positions[7] = {0};
+
+        // checkpoint
+        uint64_t processingPosition = 0;
     };
 
-    static TaskData ReadTask(const std::string& inputFileName) {
+    TaskData taskData_;
+    DiagonalLatinSquareGenerationState initialState_;
+    std::vector<DiagonalLatinSquareGenerationState> allSquares_;
+    std::fstream out_;
+    const char* outputFileName_;
+
+private:
+
+    static TaskData ReadTask(const char* inputFileName) {
         std::fstream in(inputFileName, std::ios::in);
         uint64_t size, pos[7];
         if (!(in >> size >> pos[0] >> pos[1] >> pos[2] >> pos[3] >> pos[4] >> pos[5] >> pos[6])) {
@@ -92,5 +139,4 @@ private:
             state.SetValue(i, columnIndex, column[i]);
         }
     }
-
 };
