@@ -7,6 +7,7 @@
 #include "DLS.hpp"
 
 #include <vector>
+#include <cstring>
 #include <fstream>
 
 

@@ -198,7 +198,6 @@ std::ostream& operator<<(std::ostream& os, const std::vector<DiagonalLatinSquare
     return os;
 }
 
-typedef std::vector<std::vector<std::vector<uint8_t>>> AvailableValues;
 class DiagonalLatinSquareGenerationState: public DiagonalLatinSquare {
 public:
 
@@ -207,7 +206,7 @@ public:
         for (uint8_t i = 0; i < size; ++i) {
             values.emplace_back(i);
         }
-        available_values_ = AvailableValues(size, std::vector<std::vector<uint8_t>>(size, values));
+        available_values_ = std::vector<std::vector<std::vector<uint8_t>>>(size, std::vector<std::vector<uint8_t>>(size, values));
     }
 
     void SetValue(uint8_t i, uint8_t j, uint8_t value) {
@@ -350,8 +349,8 @@ private:
     }
 
 private:
-    AvailableValues available_values_;
-    std::vector<std::pair<uint8_t, uint8_t>> positions_with_one_possibility_;
+    std::vector<std::vector<std::vector<uint8_t> > > available_values_;
+    std::vector<std::pair<uint8_t, uint8_t> > positions_with_one_possibility_;
     bool promising_ = true;
 };
 
