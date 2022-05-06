@@ -75,7 +75,7 @@ public:
     static bool PossibleToInitialize(TaskData taskData) {
         try {
             GenerateInitialState(taskData);
-        } catch (int e) {
+        } catch (...) {
             return false;
         }
         return true;
