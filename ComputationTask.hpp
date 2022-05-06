@@ -64,7 +64,6 @@ public:
         return static_cast<double>(taskData_.processingPosition) / allSquares_.size();
     }
 
-private:
     struct TaskData {
         uint64_t size = 1;
         uint64_t positions[7] = {0};
@@ -72,6 +71,17 @@ private:
         // checkpoint
         uint64_t processingPosition = 0;
     };
+
+    static bool PossibleToInitialize(TaskData taskData) {
+        try {
+            GenerateInitialState(taskData);
+        } catch (int e) {
+            return false;
+        }
+        return true;
+    }
+
+private:
 
     TaskData taskData_;
     DiagonalLatinSquareGenerationState initialState_;

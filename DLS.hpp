@@ -645,7 +645,7 @@ public:
         std::vector<T> nums;
         for (T i = 0; i < n; ++i) {
             nums.emplace_back(i);
-            factorial *= i;
+            factorial *= (i + 1);
         }
         std::vector<T> result;
         for (T i = 0; i < n - 1; ++i) {
@@ -682,7 +682,7 @@ public:
                 }
             }
         }
-        Application::fatalError("Could not generate k-th sequence");
+        throw -1;
         return {};
     }
 
