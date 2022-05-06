@@ -14,6 +14,7 @@
 #include <unordered_set>
 #include <algorithm>
 #include <chrono>
+#include <exception>
 
 class Application {
 public:
@@ -644,18 +645,21 @@ public:
         uint64_t factorial = 1;
         std::vector<T> nums;
         for (T i = 0; i < n; ++i) {
-            nums.emplace_back(i);
             factorial *= (i + 1);
+            nums.emplace_back(i);
+        }
+        if (k >= factorial) {
+            throw std::runtime_error("k is greater or equal to amount of possible sequences");
         }
         std::vector<T> result;
         for (T i = 0; i < n - 1; ++i) {
             factorial /= (n - i);
             T current = k / factorial;
             k = k % factorial;
-            result.emplace_back(std::move(nums[current]));
+            result.emplace_back(nums[current]);
             nums.erase(nums.begin() + current);
         }
-        result.emplace_back(std::move(nums[0]));
+        result.emplace_back(nums.front());
         return result;
     }
 
@@ -682,7 +686,7 @@ public:
                 }
             }
         }
-        throw -1;
+        throw std::runtime_error("k is greater or equal to amount of possible sequences");
         return {};
     }
 
