@@ -585,12 +585,12 @@ public:
                                   const std::vector<uint8_t>& columnPossibility) {
 
         auto size = std::max(rowPossibility.size(), columnPossibility.size());
-        std::vector<uint8_t> allValues;
-        // Check each row contains unique elements
+        std::vector<uint8_t> allValues, rowValues, columnValues;
+        // Check each rowValues contains unique elements
         for (auto& i : rowPossibility) {
-            std::vector<uint8_t> row;
+            rowValues.clear();
             for (auto &j: columnPossibility) {
-                if (std::find(row.begin(), row.end(), square(i, j)) != row.end()) {
+                if (std::find(rowValues.begin(), rowValues.end(), square(i, j)) != rowValues.end()) {
                     return false;
                 }
                 if (std::find(allValues.begin(), allValues.end(), square(i, j)) == allValues.end()) {
@@ -598,18 +598,18 @@ public:
                     if (allValues.size() > size)
                         return false;
                 }
-                row.emplace_back(square(i, j));
+                rowValues.emplace_back(square(i, j));
             }
         }
 
-        // Check each column contains unique elements
+        // Check each columnValues contains unique elements
         for (auto& j : columnPossibility) {
-            std::vector<uint8_t> column;
+            columnValues.clear();
             for (auto& i : rowPossibility) {
-                if (std::find(column.begin(), column.end(), square(i, j)) != column.end()) {
+                if (std::find(columnValues.begin(), columnValues.end(), square(i, j)) != columnValues.end()) {
                     return false;
                 }
-                column.emplace_back(square(i, j));
+                columnValues.emplace_back(square(i, j));
             }
         }
 

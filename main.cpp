@@ -104,7 +104,10 @@ void kek() {
 
 int main() {
     auto start = std::chrono::high_resolution_clock::now();
-    ComputationTask::Run("input.txt", "output.txt");
+    auto task = ComputationTask("in.txt", "out.txt");
+    while (task.DoIteration()) {
+        std::cout << task.GetFractionDone() << std::endl;
+    }
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     std::cout << "Time: " << duration.count() << " ms" << std::endl;
