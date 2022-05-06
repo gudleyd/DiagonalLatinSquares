@@ -39,6 +39,9 @@ public:
     }
 
     bool DoIteration() {
+        if (taskData_.processingPosition >= allSquares_.size()) {
+            return false;
+        }
         auto currentSquare = allSquares_[taskData_.processingPosition];
         auto sublatins = DLS_SubrectangleFinder::CountSubLatin(currentSquare);
         auto loops = DLS_LoopFinder::CountLoops(currentSquare);
@@ -134,6 +137,7 @@ private:
         for (uint8_t i = 0; i < state.Size(); ++i) {
             possibleValues.emplace_back(state.GetPossibleValues(rowIndex, i));
         }
+//        std::cout << (int)rowIndex << " " << SequenceGenerator::CountSequences(possibleValues) << std::endl;
         auto column = SequenceGenerator::GenerateSequence(possibleValues, sequenceIndex);
         for (uint8_t i = 0; i < state.Size(); ++i) {
             state.SetValue(rowIndex, i, column[i]);
