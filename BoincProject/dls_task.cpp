@@ -84,7 +84,8 @@ double cpu_time = 20, comp_result;
 
 int main(int argc, char **argv) {
     int i, retval;
-    char input_path[512], output_path[512], chkpt_path[512], buf[256];
+    std::string input_path, output_path, chkpt_path;
+    char buf[256];
 
     for (i=0; i<argc; i++) {
         if (strstr(argv[i], "early_exit")) early_exit = true;
@@ -119,21 +120,21 @@ int main(int argc, char **argv) {
             trickle_down?" trickle_down":""
     );
 
-    boinc_resolve_filename(INPUT_FILENAME, input_path, sizeof(input_path));
-    boinc_resolve_filename(OUTPUT_FILENAME, output_path, sizeof(output_path));
-    boinc_resolve_filename(CHECKPOINT_FILE, chkpt_path, sizeof(chkpt_path));
+    boinc_resolve_filename_s(INPUT_FILENAME, input_path);
+    boinc_resolve_filename_s(OUTPUT_FILENAME, output_path);
+    boinc_resolve_filename_s(CHECKPOINT_FILE, chkpt_path);
 
     if (network_usage) {
         boinc_network_usage(5., 17.);
     }
 
     // Create computation task
-    ComputationTask task(input_path, output_path);
-    task.GoToCheckpoint(chkpt_path);
+    ComputationTask task(input_path.c_str(), output_path.c_str());
+    task.GoToCheckpoint(chkpt_path.c_str());
 
     while (task.DoIteration()) {
         if (boinc_time_to_checkpoint()) {
-            retval = task.MakeCheckpoint(chkpt_path);
+            retval = task.MakeCheckpoint(chkpt_path.c_str());
             if (retval) {
                 fprintf(stderr, "%s APP: DLS checkpoint failed %d\n",
                         boinc_msg_prefix(buf, sizeof(buf)), retval
