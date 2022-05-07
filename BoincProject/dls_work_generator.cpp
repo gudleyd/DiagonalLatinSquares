@@ -59,9 +59,9 @@
 #include <fstream>
 #include <errno.h>
 
-#define CUSHION 100
+#define CUSHION 40
 // maintain at least this many unsent results
-#define REPLICATION_FACTOR  1
+#define REPLICATION_FACTOR  2
 // number of instances of each job
 
 const char* app_name = "example_app";
