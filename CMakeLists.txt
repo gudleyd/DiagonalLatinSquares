@@ -10,4 +10,4 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 #add_compile_options(-fprofile-generate)
 #add_link_options(-fprofile-generate)
 
-add_executable(DLS main.cpp DLS.hpp ComputationTask.hpp)
+add_executable(DLS main.cpp DLS.hpp ComputationTask.hpp BoincProject/dls_task.cpp BoincProject/dls_assimilator.cpp BoincProject/dls_work_generator.cpp)

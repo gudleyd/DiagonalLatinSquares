@@ -81,6 +81,8 @@
 
 .idea
 
+main.cpp
+
 # CMake
 cmake-build-*/
 
