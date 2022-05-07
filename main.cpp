@@ -103,10 +103,27 @@ void kek() {
 #include "ComputationTask.hpp"
 
 int main() {
+//    const std::string path = "kek_456";
+//    std::ifstream result(path, std::ifstream::in);
+//    std::string srName, seqno;
+//    for (int j=path.size() - 1; j>=0 && path[j]!='_'; --j) seqno = path[j] + seqno;
+//    uint64_t subrectangles, full_cycles, partial_cycles;
+//    std::string currentTransaction;
+//    int currentPos = 0;
+//    while (result >> srName >> subrectangles >> full_cycles >> partial_cycles) {
+//        currentTransaction += "INSERT OR IGNORE INTO RESULT(ID, SEQNO, POSINSEQ, SUBRECTANGLES, FULL_CYCLES, PARTIAL_CYCLES) VALUES ('" + srName + "', " + seqno + ", " + std::to_string(currentPos) + ", " + std::to_string(subrectangles) + ", " + std::to_string(full_cycles) + ", " + std::to_string(partial_cycles) + ");";
+//        currentPos += 1;
+//    }
+//    std::cout << currentTransaction << std::endl;
+//    return 0;
     auto start = std::chrono::high_resolution_clock::now();
+
     auto task = ComputationTask("in.txt", "out.txt");
+    task.GoToCheckpoint("checkpoint.txt");
     while (task.DoIteration()) {
         std::cout << task.GetFractionDone() << std::endl;
+        task.MakeCheckpoint("checkpoint.txt");
+        task.GoToCheckpoint("checkpoint.txt");
     }
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);

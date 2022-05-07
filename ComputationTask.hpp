@@ -29,7 +29,7 @@ public:
 
     void GoToCheckpoint(const char* checkpointFileName) {
         std::fstream checkpoint;
-        checkpoint.open(checkpointFileName, std::ios::in | std::fstream::binary);
+        checkpoint.open(checkpointFileName, std::fstream::in | std::fstream::binary);
         if (checkpoint.fail() || checkpoint.tellp() == 0) return;
         uint64_t nchars;
         checkpoint >> taskData_.processingPosition >> nchars;
@@ -52,7 +52,7 @@ public:
     int MakeCheckpoint(const char* checkpointFileName) {
         out_.flush();
         std::fstream checkpoint;
-        checkpoint.open(checkpointFileName, std::ios::out | std::fstream::binary);
+        checkpoint.open(checkpointFileName, std::fstream::out | std::fstream::binary);
         if (checkpoint.fail()) return -1;
         checkpoint << taskData_.processingPosition << " " << out_.tellp() << std::endl;
         checkpoint.close();
@@ -64,7 +64,7 @@ public:
     }
 
     double GetFractionDone() {
-        return static_cast<double>(taskData_.processingPosition) / allSquares_.size();
+        return static_cast<double>(taskData_.processingPosition) / static_cast<double>(allSquares_.size());
     }
 
     struct TaskData {
